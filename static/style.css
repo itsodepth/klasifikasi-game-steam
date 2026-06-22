@@ -1,0 +1,13 @@
+/* static/style.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card-header h3 {
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+label.form-label {
+    color: #333;
+}

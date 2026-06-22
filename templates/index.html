@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Success DSS - Single Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; font-weight: 600; }
+        .section-divider { margin: 50px 0; border-top: 3px dashed #d1d5db; }
+        .chart-container { position: relative; height: 300px; width: 100%; } 
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-dark">GamePredictor DSS</h1>
+        <p class="text-muted fs-5">Sistem Pendukung Keputusan Analisis Potensi Kesuksesan Pasar Game</p>
+    </div>
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-dark">Dashboard Evaluasi Histori Pasar</h2>
+        <p class="text-muted">Komparasi atribut pasca-rilis berdasarkan kelas Revenue Tinggi vs Rendah.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 text-center border-0 shadow-sm bg-white">
+                <div class="card-body d-flex flex-column justify-content-center p-4">
+                    <h6 class="text-muted mb-3 fw-bold">Akurasi Model Decision Tree</h6>
+                    <span class="badge bg-success shadow-sm mx-auto" style="font-size: 2rem; padding: 15px 30px; border-radius: 50px;">
+                        {{ accuracy }}%
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h6 class="mb-0 fw-bold">Tabel Rata-Rata Atribut Penguji</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover text-center align-middle m-0" style="font-size: 1rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Kategori</th>
+                                    <th>Avg Price</th>
+                                    <th>Avg Review</th>
+                                    <th>Avg Playtime</th>
+                                    <th>Avg Copies Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-danger p-2 fs-6">Rendah</span></td>
+                                    <td>${{ stats.rendah.price }}</td>
+                                    <td>{{ stats.rendah.review }}</td>
+                                    <td>{{ stats.rendah.playtime }} jam</td>
+                                    <td class="fw-bold text-danger">{{ "{:,}".format(stats.rendah.copies) }} </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-success p-2 fs-6">Tinggi</span></td>
+                                    <td>${{ stats.tinggi.price }}</td>
+                                    <td>{{ stats.tinggi.review }}</td>
+                                    <td>{{ stats.tinggi.playtime }} jam</td>
+                                    <td class="fw-bold text-success">{{ "{:,}".format(stats.tinggi.copies) }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-secondary text-white text-center fw-bold">Grafik Komparasi Atribut Umum</div>
+                <div class="card-body p-3">
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-secondary text-white text-center fw-bold">Distribusi Volume Penjualan</div>
+                <div class="card-body p-3">
+                    <div class="chart-container">
+                        <canvas id="copiesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-dark">Simulasi Portofolio Game</h2>
+        <p class="text-muted">Gunakan data di atas sebagai patokan untuk merancang strategi game Anda.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h5 class="mb-0">Form Input Atribut Game</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/predict" method="POST">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold">Harga Game (USD)</label>
+                                <input type="number" step="0.01" class="form-control" name="price" placeholder="Contoh: 15.99" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Review Score (0-100)</label>
+                                <input type="number" class="form-control" name="reviewScore" placeholder="Contoh: 80" min="0" max="100" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold">Kelas Publisher</label>
+                                <select class="form-select" name="publisherClass" required>
+                                    <option value="Indie">Indie</option>
+                                    <option value="Hobbyist">Hobbyist</option>
+                                    <option value="AA">AA</option>
+                                    <option value="AAA">AAA</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Avg Playtime (Jam)</label>
+                                <input type="number" step="0.1" class="form-control" name="avgPlaytime" placeholder="Contoh: 10.5" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Target Salinan Terjual (Copies Sold)</label>
+                            <input type="number" class="form-control" name="copiesSold" placeholder="Contoh: 150000" min="0" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">Jalankan Evaluasi Model</button>
+                    </form>
+
+                    {% if result %}
+                    <hr class="my-4">
+                    <div class="alert {% if result == 'TINGGI' %}alert-success{% else %}alert-danger{% endif %} text-center shadow-sm" id="hasil-prediksi">
+                        <span class="fs-6 d-block text-uppercase tracking-wide">Hasil Klasifikasi</span>
+                        <h3 class="mb-0 fw-bold mt-1">POTENSI REVENUE: {{ result }}</h3>
+                    </div>
+                    
+                    <div class="card mt-3 border-info bg-light">
+                        <div class="card-header bg-info text-white fw-bold">Rekomendasi Strategis</div>
+                        <div class="card-body">
+                            <p class="card-text text-dark m-0">{{ recommendation }}</p>
+                        </div>
+                    </div>
+
+                    <script>
+                        window.onload = function() {
+                            document.getElementById('hasil-prediksi').scrollIntoView({ behavior: 'smooth' });
+                        };
+                    </script>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const statsData = {{ stats | tojson | safe }};
+    
+    // Grafik 1: Atribut Umum
+    const ctxBar = document.getElementById('barChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Harga ($)', 'Review Score', 'Playtime (Jam)'],
+            datasets: [
+                {
+                    label: 'Revenue Rendah',
+                    data: [statsData.rendah.price, statsData.rendah.review, statsData.rendah.playtime],
+                    backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Revenue Tinggi',
+                    data: [statsData.tinggi.price, statsData.tinggi.review, statsData.tinggi.playtime],
+                    backgroundColor: 'rgba(34, 197, 94, 0.75)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Grafik 2: Distribusi Copies Sold
+    const ctxCopies = document.getElementById('copiesChart').getContext('2d');
+    new Chart(ctxCopies, {
+        type: 'bar',
+        data: {
+            labels: ['Copies Sold'],
+            datasets: [
+                {
+                    label: 'Revenue Rendah',
+                    data: [statsData.rendah.copies],
+                    backgroundColor: 'rgba(239, 68, 68, 0.85)',
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Revenue Tinggi',
+                    data: [statsData.tinggi.copies],
+                    backgroundColor: 'rgba(34, 197, 94, 0.85)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { position: 'bottom' } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

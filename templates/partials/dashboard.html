@@ -1,0 +1,113 @@
+<!-- TAB 1: DASHBOARD & DATASET -->
+<div class="tab-pane fade show active" id="tab-content-dashboard" role="tabpanel" aria-labelledby="pills-dashboard-tab">
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Hero Description Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4 bg-white">
+                <div class="card-body">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1.5 rounded-pill mb-3 fw-bold text-uppercase">Dashboard Evaluasi</span>
+                    <h3 class="fw-bold text-dark mb-3">Analisis Niat Beli Konsumen Elektronik</h3>
+                    <p class="text-muted leading-relaxed mb-0">
+                        Halaman ini memetakan dataset penjualan elektronik konsumen untuk dianalisis oleh algoritma <strong>Decision Tree Classifier</strong>. Model menganalisis atribut seperti harga produk, umur pelanggan, frekuensi belanja, dan tingkat kepuasan untuk mengklasifikasi apakah pelanggan berniat membeli (<strong class="text-success">PurchaseIntent = Ya</strong>) atau tidak.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Accuracy and Quick Stats -->
+            <div class="row mb-4">
+                <!-- Accuracy Badge Card -->
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card h-100 text-center border-0 shadow-sm bg-white py-4">
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            <h6 class="text-muted mb-3 fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Akurasi Model ML</h6>
+                            <span class="badge bg-success shadow-sm mx-auto" style="font-size: 1.8rem; padding: 12px 24px; border-radius: 50px;" id="accuracy-badge">
+                                -%
+                            </span>
+                            <span class="text-muted mt-2" style="font-size: 0.75rem;">Skor Pengujian Tes Set</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats Info -->
+                <div class="col-md-8">
+                    <div class="card h-100 border-0 shadow-sm bg-white">
+                        <div class="card-header bg-dark text-white py-3">
+                            <h6 class="mb-0 fw-bold"><i class="fa-solid fa-square-poll-vertical me-1.5"></i> Ringkasan Statistik Data Latih</h6>
+                        </div>
+                        <div class="card-body d-flex justify-content-around align-items-center py-4">
+                            <div class="text-center px-2">
+                                <span class="text-muted d-block text-uppercase" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">Total Sampel Data</span>
+                                <span class="fs-4 fw-bold text-dark" id="stat-total-samples">-</span>
+                            </div>
+                            <div class="vr border-secondary border-opacity-25" style="height: 40px;"></div>
+                            <div class="text-center px-2">
+                                <span class="text-muted d-block text-uppercase" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">Niat Beli: Ya</span>
+                                <span class="fs-4 fw-bold text-success" id="stat-buyers">-</span>
+                            </div>
+                            <div class="vr border-secondary border-opacity-25" style="height: 40px;"></div>
+                            <div class="text-center px-2">
+                                <span class="text-muted d-block text-uppercase" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">Niat Beli: Tidak</span>
+                                <span class="fs-4 fw-bold text-danger" id="stat-non-buyers">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dataset Explorer Table -->
+            <div class="card border-0 shadow-sm bg-white mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="p-2 bg-primary bg-opacity-10 text-primary rounded"><i class="fa-solid fa-table"></i></div>
+                        <div>
+                            <h5 class="mb-0 fw-bold text-dark">Eksplorasi Dataset Asli</h5>
+                            <p class="text-muted mb-0" style="font-size: 0.75rem;">Dataset historis yang digunakan dalam melatih model cerdas</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 w-100 w-sm-auto justify-content-end">
+                        <label for="table-limit" class="text-muted" style="font-size: 0.8rem; white-space: nowrap;">Tampilkan Data:</label>
+                        <!-- Dropdown options: 100 vs all, pre-selected to 100 -->
+                        <select id="table-limit" class="form-select form-select-sm w-auto cursor-pointer">
+                            <option value="100" selected>100 Data Pertama</option>
+                            <option value="all">Semua Data (9.000 Baris)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive table-scroll-container">
+                        <table class="table table-striped table-hover text-center align-middle m-0" style="font-size: 0.85rem;" id="dataset-table">
+                            <thead class="table-light sticky-top" style="z-index: 10;">
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Kategori</th>
+                                    <th>Brand</th>
+                                    <th>Harga</th>
+                                    <th>Umur</th>
+                                    <th>Gender</th>
+                                    <th>Frekuensi Beli</th>
+                                    <th>Kepuasan</th>
+                                    <th>Minat Beli</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr class="loading-row">
+                                    <td colspan="9" class="p-5 text-center text-muted">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                        Memuat data latih...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white py-2.5 border-top d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                    <span id="table-showing-text">Menampilkan 0 dari 9.000 data</span>
+                    <span class="fst-italic"><i class="fa-solid fa-info-circle"></i> Tabel di atas dapat di-scroll vertikal & horizontal</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

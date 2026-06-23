@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntentSphere DSS - Analisis Niat Beli Konsumen Elektronik</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS (Garis diagram pohon keputusan & layout tabel scroll) -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-dark d-flex align-items-center justify-content-center gap-2">
+            <i class="fa-solid fa-brain text-primary"></i> IntentSphere DSS
+        </h1>
+        <p class="text-muted fs-5">Sistem Pendukung Keputusan Analisis Potensi Niat Beli Konsumen Elektronik</p>
+    </div>
+
+    <!-- TAB NAVIGATION BAR -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10">
+            <ul class="nav nav-pills nav-fill bg-white p-2 rounded shadow-sm border" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold py-2.5" id="pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#tab-content-dashboard" type="button" role="tab" aria-controls="tab-content-dashboard" aria-selected="true">
+                        <i class="fa-solid fa-chart-line me-1.5"></i> Dashboard & Dataset
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold py-2.5" id="pills-analisis-tab" data-bs-toggle="pill" data-bs-target="#tab-content-analisis" type="button" role="tab" aria-controls="tab-content-analisis" aria-selected="false">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Simulator Prediktif
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold py-2.5" id="pills-concept-tab" data-bs-toggle="pill" data-bs-target="#tab-content-concept" type="button" role="tab" aria-controls="tab-content-concept" aria-selected="false">
+                        <i class="fa-solid fa-diagram-project"></i> Konsep & Visualisasi Pohon
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MAIN BLOCK CONTENT -->
+    <div class="tab-content" id="pills-tabContent">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- FOOTER -->
+    <hr class="my-5 border-secondary border-opacity-25">
+    <div class="text-center text-muted fs-6">
+        <p>&copy; 2026 IntentSphere DSS Platform. Powered by Decision Tree Classifier & Bootstrap 5.</p>
+    </div>
+
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!-- TAB 2: ANALISIS PREDIKSI -->
+<div class="tab-pane fade" id="tab-content-analisis" role="tabpanel" aria-labelledby="pills-analisis-tab">
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Form Input Atribut Game -->
+            <div class="card mb-4 border-0 shadow-sm bg-white position-relative overflow-hidden">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fa-solid fa-sliders me-1.5"></i> Form Input Atribut Konsumen</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="prediction-form">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold" for="ProductCategory">Kategori Produk</label>
+                                <select class="form-select cursor-pointer" id="ProductCategory" name="ProductCategory" required>
+                                    <option value="Smartphones">Smartphones</option>
+                                    <option value="Smart Watches">Smart Watches</option>
+                                    <option value="Tablets">Tablets</option>
+                                    <option value="Laptops">Laptops</option>
+                                    <option value="Headphones">Headphones</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="ProductBrand">Brand Produk</label>
+                                <select class="form-select cursor-pointer" id="ProductBrand" name="ProductBrand" required>
+                                    <option value="Samsung">Samsung</option>
+                                    <option value="Apple">Apple</option>
+                                    <option value="Sony">Sony</option>
+                                    <option value="HP">HP</option>
+                                    <option value="Other Brands">Other Brands</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold" for="ProductPrice">Harga Produk ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="ProductPrice" name="ProductPrice" placeholder="Contoh: 1250.00" min="100" max="3000" value="1250.00" required>
+                                <span class="text-muted" style="font-size: 0.75rem;">Rentang: $100 s.d $3,000</span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="CustomerAge">Umur Pelanggan (Tahun)</label>
+                                <input type="number" class="form-control" id="CustomerAge" name="CustomerAge" placeholder="Contoh: 35" min="18" max="70" value="35" required>
+                                <span class="text-muted" style="font-size: 0.75rem;">Rentang: 18 s.d 70 tahun</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold d-block">Gender Pelanggan</label>
+                                <div class="d-flex gap-4 pt-1.5">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="CustomerGender" id="genderMale" value="0" checked>
+                                        <label class="form-check-label cursor-pointer" for="genderMale">Laki-laki</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="CustomerGender" id="genderFemale" value="1">
+                                        <label class="form-check-label cursor-pointer" for="genderFemale">Perempuan</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold d-flex justify-content-between" for="PurchaseFrequency">
+                                    <span>Frekuensi Pembelian Per Tahun</span>
+                                    <span class="text-primary font-monospace" id="frequency-val-display">5x</span>
+                                </label>
+                                <div class="d-flex align-items-center h-100 mt-1">
+                                    <input type="range" class="form-range" id="PurchaseFrequency" name="PurchaseFrequency" min="1" max="20" value="5" oninput="document.getElementById('frequency-val-display').textContent = this.value + 'x'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold d-block">Tingkat Kepuasan Pelanggan (1 s.d 5)</label>
+                            <div class="d-flex justify-content-between pt-1">
+                                <div class="form-check form-check-inline cursor-pointer">
+                                    <input class="form-check-input" type="radio" name="CustomerSatisfaction" id="sat1" value="1">
+                                    <label class="form-check-label cursor-pointer" for="sat1">1</label>
+                                </div>
+                                <div class="form-check form-check-inline cursor-pointer">
+                                    <input class="form-check-input" type="radio" name="CustomerSatisfaction" id="sat2" value="2">
+                                    <label class="form-check-label cursor-pointer" for="sat2">2</label>
+                                </div>
+                                <div class="form-check form-check-inline cursor-pointer">
+                                    <input class="form-check-input" type="radio" name="CustomerSatisfaction" id="sat3" value="3" checked>
+                                    <label class="form-check-label cursor-pointer" for="sat3">3</label>
+                                </div>
+                                <div class="form-check form-check-inline cursor-pointer">
+                                    <input class="form-check-input" type="radio" name="CustomerSatisfaction" id="sat4" value="4">
+                                    <label class="form-check-label cursor-pointer" for="sat4">4</label>
+                                </div>
+                                <div class="form-check form-check-inline cursor-pointer">
+                                    <input class="form-check-input" type="radio" name="CustomerSatisfaction" id="sat5" value="5">
+                                    <label class="form-check-label cursor-pointer" for="sat5">5</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm fw-bold">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1.5"></i> Jalankan Evaluasi Model
+                        </button>
+                    </form>
+
+                    <!-- Loading overlay (centered inside card body) -->
+                    <div id="predict-loader" class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-95 z-3 d-flex flex-column align-items-center justify-content-center gap-3 hidden">
+                        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+                        <span class="fw-bold text-dark">Sedang mengevaluasi keputusan...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Results -->
+            <div id="prediction-result-box" class="card border-0 shadow-sm bg-white p-4 mb-4 hidden">
+                <div class="card-body p-0">
+                    <div class="alert text-center shadow-sm" id="hasil-prediksi-alert">
+                        <span class="fs-6 d-block text-uppercase tracking-wide text-muted">Hasil Klasifikasi</span>
+                        <h3 class="mb-0 fw-bold mt-1 text-dark" id="result-status-text">MINAT BELI</h3>
+                    </div>
+                    
+                    <div class="text-muted text-center mb-3" style="font-size: 0.8rem;">
+                        Tingkat Keyakinan Model: <strong class="text-dark" id="result-confidence-text">0%</strong>
+                    </div>
+                    
+                    <div class="card mt-3 border-info bg-light">
+                        <div class="card-header bg-info text-white fw-bold"><i class="fa-solid fa-lightbulb me-1"></i> Rekomendasi Strategis</div>
+                        <div class="card-body">
+                            <ul id="recommendation-list" class="card-text text-dark m-0 ps-3 space-y-2">
+                                <!-- JS will inject list items -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

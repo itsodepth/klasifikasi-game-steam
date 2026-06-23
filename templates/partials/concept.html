@@ -1,0 +1,71 @@
+<!-- TAB 3: MODEL CONCEPT & TREE DIAGRAM -->
+<div class="tab-pane fade" id="tab-content-concept" role="tabpanel" aria-labelledby="pills-concept-tab">
+    
+    <div class="row">
+        <!-- Theory & Feature Importance (Left, 4 columns) -->
+        <div class="col-lg-4 mb-4">
+            <!-- Theory Card -->
+            <div class="card border-0 shadow-sm bg-white mb-4">
+                <div class="card-header bg-dark text-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-graduation-cap me-1.5"></i> Konsep Pohon Keputusan</h6>
+                </div>
+                <div class="card-body p-4" style="font-size: 0.85rem; line-height: 1.6; color: #4b5563;">
+                    <p class="mb-3">
+                        <strong>Decision Tree (Pohon Keputusan)</strong> membagi dataset konsumen elektronik secara berulang menjadi segmen-segmen yang semakin kecil menggunakan kriteria pemisah tertentu.
+                    </p>
+                    <p class="mb-3">
+                        Pohon keputusan membagi data dengan mencari pemisahan nilai fitur yang menghasilkan pengelompokan kelas **PurchaseIntent** (Membeli vs Tidak) dengan tingkat kemurnian (*Gini Impurity* atau *Entropy*) tertinggi.
+                    </p>
+                    <p class="mb-0">
+                        Aturan percabangan yang terbentuk dari model latih kami digambarkan secara visual pada diagram di sebelah kanan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature Importance Card -->
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-header bg-dark text-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-chart-bar me-1.5"></i> Bobot Kontribusi Fitur</h6>
+                </div>
+                <div class="card-body p-4" id="importance-container">
+                    <!-- Feature progress bars rendered by script.js -->
+                    <div class="text-center p-3 text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        Memuat kontribusi fitur...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Visual Decision Tree Bagan (Right, 8 columns) -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm bg-white h-100 d-flex flex-column">
+                <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-diagram-project me-1.5"></i> Bagan Struktur Decision Tree</h6>
+                    <span class="badge bg-white text-primary text-uppercase" style="font-size: 0.65rem;">Model Terlatih</span>
+                </div>
+                <div class="card-body p-4 flex-grow-1 d-flex flex-column">
+                    <p class="text-muted mb-3" style="font-size: 0.8rem;">
+                        Diagram di bawah memetakan logika percabangan pohon keputusan. Cabang Kiri = Benar (True), Cabang Kanan = Salah (False).
+                    </p>
+                    
+                    <!-- Diagram Inner Scroll Container -->
+                    <div class="tree-visualizer-wrapper border rounded p-3 flex-grow-1 overflow-auto bg-light d-flex justify-content-center align-items-start" style="min-height: 400px;">
+                        <div class="tree-container select-none" id="tree-container-diagram">
+                            <div class="text-center p-5 text-muted">
+                                <div class="spinner-border text-primary me-2" role="status"></div>
+                                Menyusun struktur bagan pohon...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-muted mt-2 d-flex justify-content-between" style="font-size: 0.75rem;">
+                        <span><i class="fa-solid fa-arrows-left-right"></i> Geser horizontal jika bagan meluap</span>
+                        <span class="fw-bold text-dark">Gini Splitting Criteria</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

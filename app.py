@@ -4,6 +4,7 @@ import numpy as np
 from flask import Flask, jsonify, request, render_template
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, _tree
+from sklearn.metrics import confusion_matrix, classification_report
 
 app = Flask(__name__)
 
@@ -74,6 +75,16 @@ model.fit(X_train, y_train)
 # Hitung Akurasi
 train_accuracy = model.score(X_train, y_train)
 test_accuracy = model.score(X_test, y_test)
+y_pred = model.predict(X_test)
+
+print("=== HASIL PENGUJIAN MODEL ===")
+print(f"Akurasi Training: {train_accuracy * 100:.2f}%")
+print(f"Akurasi Testing: {test_accuracy * 100:.2f}%")
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("\nLaporan Klasifikasi:")
+print(classification_report(y_test, y_pred))
+print("=============================")
 
 # Hitung Feature Importances
 importances = model.feature_importances_
@@ -263,7 +274,7 @@ def predict():
         encoded_category = category_map[category]
         encoded_brand = brand_map[brand]
         
-        input_data = np.array([[
+        input_data = pd.DataFrame([[
             encoded_category,
             encoded_brand,
             price,
@@ -271,7 +282,7 @@ def predict():
             gender,
             frequency,
             satisfaction
-        ]])
+        ]], columns=feature_cols)
         
         pred = int(model.predict(input_data)[0])
         prob = model.predict_proba(input_data)[0]

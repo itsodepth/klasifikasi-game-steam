@@ -5,11 +5,13 @@ from flask import Flask, jsonify, request, render_template
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, _tree
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 
 app = Flask(__name__)
 
 # --------------------------------------------------------------------
-# 1. LOAD DATASET & PREPROCESSING
+# 1. LOAD DATASET & PREPROCESSING (CRISP-DM Data Preparation)
 # --------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "consumer_electronics_sales_data.csv")
@@ -33,13 +35,52 @@ brand_map = {
 }
 brand_reverse = {v: k for k, v in brand_map.items()}
 
-# Membaca data dan melatih model saat start
+# Membaca data saat start
 df = pd.read_csv(DATA_PATH)
 
-# Buat dataframe versi encoded untuk model training
-df_model = df.copy()
-df_model['ProductCategory_encoded'] = df_model['ProductCategory'].map(category_map)
-df_model['ProductBrand_encoded'] = df_model['ProductBrand'].map(brand_map)
+# ====================================================================
+# TAHAPAN CRISP-DM DATA PREPARATION (PREPROCESSING)
+# ====================================================================
+
+# 1. Pembersihan Data (Data Cleaning)
+# a. Penanganan Duplikat: Hapus jika ada duplikat baris
+df_cleaned = df.drop_duplicates().copy()
+
+# b. Seleksi Fitur (Feature Selection): Hapus ProductID yang tidak informatif
+if 'ProductID' in df_cleaned.columns:
+    df_cleaned.drop(columns=['ProductID'], inplace=True, errors='ignore')
+
+# c. Konstruksi Fitur & Transformasi Kategorikal (Categorical Encoding)
+# Memetakan nilai teks kategori dan brand ke angka diskrit
+df_cleaned['ProductCategory_encoded'] = df_cleaned['ProductCategory'].map(category_map)
+df_cleaned['ProductBrand_encoded'] = df_cleaned['ProductBrand'].map(brand_map)
+
+# d. Penanganan Nilai Kosong (Imputasi)
+# Walaupun data saat ini bersih, imputasi ditambahkan agar tangguh jika ada data kosong baru di masa depan
+num_cols = ['ProductPrice', 'CustomerAge', 'PurchaseFrequency', 'CustomerSatisfaction']
+cat_cols = ['ProductCategory_encoded', 'ProductBrand_encoded', 'CustomerGender']
+
+# Imputasi kolom numerik dengan median
+num_imputer = SimpleImputer(strategy='median')
+df_cleaned[num_cols] = num_imputer.fit_transform(df_cleaned[num_cols])
+
+# Imputasi kolom kategorikal dengan modus (most frequent)
+cat_imputer = SimpleImputer(strategy='most_frequent')
+df_cleaned[cat_cols] = cat_imputer.fit_transform(df_cleaned[cat_cols])
+
+# e. Penanganan Outlier (IQR Capping)
+# Menghitung dan menyimpan batas outlier untuk kolom numerik continuous
+scale_cols = ['ProductPrice', 'CustomerAge', 'PurchaseFrequency']
+outlier_bounds = {}
+for col in scale_cols:
+    q1 = df_cleaned[col].quantile(0.25)
+    q3 = df_cleaned[col].quantile(0.75)
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+    outlier_bounds[col] = (lower_bound, upper_bound)
+    # Membatasi nilai di luar jangkauan (capping)
+    df_cleaned[col] = df_cleaned[col].clip(lower=lower_bound, upper=upper_bound)
 
 # Tentukan Fitur dan Label
 feature_cols = [
@@ -51,11 +92,28 @@ feature_cols = [
     'PurchaseFrequency', 
     'CustomerSatisfaction'
 ]
-X = df_model[feature_cols]
-y = df_model['PurchaseIntent']
+X = df_cleaned[feature_cols]
+y = df_cleaned['PurchaseIntent']
 
-# Split data
+# Split data (80% train, 20% test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# f. Penskalaan Fitur (Feature Scaling)
+# Melakukan Standardisasi (Z-score) pada kolom numerik kontinu
+scaler = StandardScaler()
+# Fit hanya pada data training numerik agar tidak terjadi data leakage
+scaler.fit(X_train[scale_cols])
+
+# Buat dataframe copy untuk training model yang sudah discale
+X_train_scaled = X_train.copy()
+X_test_scaled = X_test.copy()
+
+X_train_scaled[scale_cols] = scaler.transform(X_train[scale_cols])
+X_test_scaled[scale_cols] = scaler.transform(X_test[scale_cols])
+
+# ====================================================================
+# TAHAPAN CRISP-DM MODELING & EVALUATION
+# ====================================================================
 
 # Latih Decision Tree Classifier berdasarkan parameter RapidMiner:
 # - criterion: gain ratio (di sklearn didekati dengan 'entropy' / Information Gain)
@@ -70,12 +128,12 @@ model = DecisionTreeClassifier(
     min_impurity_decrease=0.01,
     random_state=42
 )
-model.fit(X_train, y_train)
+model.fit(X_train_scaled, y_train)
 
 # Hitung Akurasi
-train_accuracy = model.score(X_train, y_train)
-test_accuracy = model.score(X_test, y_test)
-y_pred = model.predict(X_test)
+train_accuracy = model.score(X_train_scaled, y_train)
+test_accuracy = model.score(X_test_scaled, y_test)
+y_pred = model.predict(X_test_scaled)
 
 print("=== HASIL PENGUJIAN MODEL ===")
 print(f"Akurasi Training: {train_accuracy * 100:.2f}%")
@@ -284,8 +342,22 @@ def predict():
             satisfaction
         ]], columns=feature_cols)
         
-        pred = int(model.predict(input_data)[0])
-        prob = model.predict_proba(input_data)[0]
+        # CRISP-DM Preprocessing pada input baru:
+        # 1. Imputasi nilai kosong jika ada (keamanan tambahan)
+        input_data[num_cols] = num_imputer.transform(input_data[num_cols])
+        input_data[cat_cols] = cat_imputer.transform(input_data[cat_cols])
+        
+        # 2. Penanganan Outlier: Membatasi nilai input sesuai batas outlier dari data training
+        for col in scale_cols:
+            lower, upper = outlier_bounds[col]
+            input_data[col] = input_data[col].clip(lower=lower, upper=upper)
+            
+        # 3. Penskalaan Fitur (Scaling): Standardisasi data input
+        input_data_scaled = input_data.copy()
+        input_data_scaled[scale_cols] = scaler.transform(input_data[scale_cols])
+        
+        pred = int(model.predict(input_data_scaled)[0])
+        prob = model.predict_proba(input_data_scaled)[0]
         confidence = round(float(prob[pred]) * 100, 1)
         
         recommendations = []
